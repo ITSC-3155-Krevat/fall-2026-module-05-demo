@@ -6,15 +6,21 @@ import {
   getSingleArticle,
 } from './articledb.js';
 
-const app = express();
+export const app = express();
 
 app.use(express.json());
 
-app.get('/health', function (req, res) {
+app.use(function (req, res, next) {
+  res.locals.requestId = Math.round(Math.random() * 1000);
+  next();
+});
+
+app.get('/health', function (_, res) {
   res.json({ status: 'ok' });
 });
 
 app.get('/articles', function (req, res) {
+  console.log('Request ID:', res.locals.requestId);
   const titleContains = req.query.title_contains;
   const articles = getAllArticles();
   if (!titleContains) {
@@ -41,9 +47,15 @@ app.get('/articles/:articleId', function (req, res) {
 });
 
 app.post('/articles', function (req, res) {
-  const article = req.body as Article;
-  const newArticle = createArticle(article);
+  const article = req.body as Partial<Omit<Article, 'articleId'>>;
+  if (!article.contents || !article.title) {
+    return res.sendStatus(400);
+  }
+  const { contents, title } = article;
+  const newArticle = createArticle({ title, contents });
   res.status(201).json(newArticle);
 });
 
-app.listen(8080, () => console.log('Service started on 8080'));
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(8080, () => console.log('Service started on 8080'));
+}
