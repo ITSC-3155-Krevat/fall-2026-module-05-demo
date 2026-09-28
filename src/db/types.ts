@@ -1,4 +1,4 @@
-import { Generated, Selectable } from 'kysely';
+import { Generated, Insertable, Selectable } from 'kysely';
 
 export type ArticleTable = {
   articleId: Generated<number>;
@@ -7,5 +7,6 @@ export type ArticleTable = {
 };
 
 export type Article = Selectable<ArticleTable>;
+export type NewArticle = Insertable<ArticleTable>;
 
 export type Database = { article: ArticleTable };
