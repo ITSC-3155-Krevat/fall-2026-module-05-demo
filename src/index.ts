@@ -51,6 +51,18 @@ app.post('/articles', async function (req, res) {
   res.status(201).json(newArticle);
 });
 
+app.use(
+  (
+    err: any,
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction,
+  ) => {
+    console.error(err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  },
+);
+
 if (process.env.NODE_ENV !== 'test') {
   app.listen(8080, () => console.log('Service started on 8080'));
 }
