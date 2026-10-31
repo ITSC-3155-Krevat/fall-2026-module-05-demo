@@ -2,9 +2,10 @@ import { db } from '../db/db.js';
 import { Article, NewArticle } from '../db/types.js';
 
 export async function getAllArticles(
+  userId: number,
   opts: { titleContains?: string } = {},
 ): Promise<Article[]> {
-  let query = db.selectFrom('article').selectAll();
+  let query = db.selectFrom('article').selectAll().where('userId', '=', userId);
   if (opts.titleContains) {
     query = query.where('title', 'ilike', `%${opts.titleContains}%`);
   }
